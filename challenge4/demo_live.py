@@ -1,5 +1,5 @@
 # Python 3.12
-"""Live demo against a REAL OpenRouter endpoint (Challenge 4).
+r"""Live demo against a REAL OpenRouter endpoint (Challenge 4).
 
 This script makes a real network call and consumes credits. It is intentionally
 separate from the test suite, which never touches the network.

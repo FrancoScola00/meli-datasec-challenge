@@ -9,7 +9,7 @@ posture** (how sensitive data is handled), not just a working answer.
 | 1 | `solution_minesweeper.py` | Count neighbouring mines | ✅ pytest 12/12 (local) |
 | 2 | `solution_best_in_genre.py` | Highest-rated TV show in a genre (paginated API) | ✅ pytest 9/9 mocked + ✅ live API |
 | 3 | `applicant_query.sql` | Customers with >3 failed ad events (MySQL 8) | ✅ run on real MySQL 8.4.9 |
-| 4 | `challenge4/` | LLM data-classification engine + PII redaction | ✅ pytest 16/16 + offline eval (live demo needs a key) |
+| 4 | `challenge4/` | LLM data-classification engine + PII redaction | ✅ pytest 16/16 + offline eval + ✅ live demo (free model) |
 
 ## Repository layout
 ```
@@ -118,6 +118,8 @@ sensitive data and add nothing here). `git`/`gh` (CLI, not MCP) were used to pub
 - **Verified locally:** all pytest suites (C1 12, C2 9 mocked, C4 16), signature guards,
   import-has-no-side-effects, C4 offline eval, and C3 against real MySQL 8.4.9.
 - **Verified against an external service:** C2's live API call returned `Game of Thrones`
-  for `Action`.
-- **Not verified yet:** C4's **live** OpenRouter demo (needs a real `OPENROUTER_API_KEY`).
-  The path and runbook are ready; it is not claimed to work until run with a key.
+  for `Action`; C4's **live** OpenRouter demo ran end-to-end on a free model
+  (`nvidia/nemotron-nano-9b-v2:free`), redacting EMAIL/CARD/SSN/PHONE before the call and
+  returning `RESTRICTED / PII`.
+- **Not exhaustively verified:** C4's real-world accuracy at scale and the PII regex recall
+  against adversarial formats — these need a larger labelled set and load testing.
