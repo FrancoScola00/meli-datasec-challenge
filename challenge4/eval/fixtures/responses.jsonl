@@ -1,0 +1,8 @@
+{"id": "g1", "response": {"sensitivity": "PUBLIC", "category": "BUSINESS", "risk_score": 5, "confidence": 0.95, "rationale": "publicly announced event"}}
+{"id": "g2", "response": {"sensitivity": "INTERNAL", "category": "BUSINESS", "risk_score": 35, "confidence": 0.88, "rationale": "internal operational documentation"}}
+{"id": "g3", "response": {"sensitivity": "RESTRICTED", "category": "PII", "risk_score": 95, "confidence": 0.97, "rationale": "personal identifiers present"}}
+{"id": "g4", "response": {"sensitivity": "RESTRICTED", "category": "CREDENTIALS", "risk_score": 98, "confidence": 0.98, "rationale": "cloud access credential present"}}
+{"id": "g5", "response": {"sensitivity": "RESTRICTED", "category": "HEALTH", "risk_score": 92, "confidence": 0.93, "rationale": "protected health information"}}
+{"id": "g6", "response": {"sensitivity": "PUBLIC", "category": "BUSINESS", "risk_score": 8, "confidence": 0.9, "rationale": "non-sensitive marketing material"}}
+{"id": "g7", "response": {"sensitivity": "INTERNAL", "category": "BUSINESS", "risk_score": 45, "confidence": 0.62, "rationale": "compensation guidance"}}
+{"id": "g8", "response": {"sensitivity": "RESTRICTED", "category": "FINANCIAL", "risk_score": 97, "confidence": 0.96, "rationale": "payment card data present"}}

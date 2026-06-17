@@ -1,0 +1,8 @@
+{"id": "g1", "text": "Our quarterly earnings call is open to the public next Thursday.", "sensitivity": "PUBLIC", "category": "BUSINESS"}
+{"id": "g2", "text": "Internal wiki: deployment runbook for the staging cluster.", "sensitivity": "INTERNAL", "category": "BUSINESS"}
+{"id": "g3", "text": "Customer SSN is 123-45-6789 and email john@acme.com", "sensitivity": "RESTRICTED", "category": "PII"}
+{"id": "g4", "text": "AWS access key AKIAIOSFODNN7EXAMPLE for the production account.", "sensitivity": "RESTRICTED", "category": "CREDENTIALS"}
+{"id": "g5", "text": "Patient diagnosis: type 2 diabetes, ongoing insulin treatment.", "sensitivity": "RESTRICTED", "category": "HEALTH"}
+{"id": "g6", "text": "Marketing blog draft about our new logo colors.", "sensitivity": "PUBLIC", "category": "BUSINESS"}
+{"id": "g7", "text": "Salary band for L5 engineers is confidential and internal only.", "sensitivity": "CONFIDENTIAL", "category": "BUSINESS"}
+{"id": "g8", "text": "Credit card 4111 1111 1111 1111 expiring 12/26.", "sensitivity": "RESTRICTED", "category": "FINANCIAL"}

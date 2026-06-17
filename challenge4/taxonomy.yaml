@@ -1,0 +1,27 @@
+# Sensitivity taxonomy for the data-classification engine.
+# Configurable by design: edit or extend this file without touching code or the
+# prompt. sensitivity_levels are ordered least -> most sensitive; the last entry is
+# used as the fail-closed default when classification cannot be validated.
+sensitivity_levels:
+  - name: PUBLIC
+    description: Safe to disclose publicly; no harm if leaked.
+    risk_range: [0, 20]
+  - name: INTERNAL
+    description: For employees or partners; low harm if leaked.
+    risk_range: [21, 50]
+  - name: CONFIDENTIAL
+    description: Sensitive business or personal data; meaningful harm if leaked.
+    risk_range: [51, 80]
+  - name: RESTRICTED
+    description: Highly sensitive (PII, secrets, financial, health); severe harm if leaked.
+    risk_range: [81, 100]
+
+categories:
+  - PII
+  - CREDENTIALS
+  - FINANCIAL
+  - HEALTH
+  - LEGAL
+  - SOURCE_CODE
+  - BUSINESS
+  - OTHER

@@ -1,0 +1,3 @@
+# Normalize all text files to LF in the repository for cross-platform consistency
+# (graders may be on Linux/macOS). Binary files are auto-detected.
+* text=auto eol=lf

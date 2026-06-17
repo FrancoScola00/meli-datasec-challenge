@@ -1,0 +1,8 @@
+# Python 3.12 — pinned direct dependencies (no open ranges).
+# Challenges 1-3 use ONLY the Python standard library / pure SQL.
+# These dependencies are for Challenge 4 (LLM classifier) and the test suite.
+openai==2.43.0
+pydantic==2.13.4
+PyYAML==6.0.3
+python-dotenv==1.2.2
+pytest==9.1.0
