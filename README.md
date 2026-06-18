@@ -13,7 +13,7 @@ posture** (how sensitive data is handled), not just a working answer.
 | 1 | `solution_minesweeper.py` | Count neighbouring mines | ✅ pytest → 13 passed (local) |
 | 2 | `solution_best_in_genre.py` | Highest-rated TV show in a genre (paginated API) | ✅ pytest → 9 passed mocked + ✅ live API |
 | 3 | `applicant_query.sql` | Customers with >3 failed ad events (MySQL 8) | ✅ run on real MySQL 8.4.9 |
-| 4 | `challenge4/` | LLM data-classification engine + PII redaction | ✅ pytest → 31 passed + offline eval + ✅ live demo (free model) |
+| 4 | `challenge4/` | LLM data-classification engine + PII redaction | ✅ pytest → 40 passed + offline eval + ✅ live demo (free model) |
 
 ## Repository layout
 The three graded deliverables sit at the repo root (the path the auto-grader
@@ -138,18 +138,19 @@ the built-in `WebFetch` tool was used to confirm the C2 API shape; the connected
 sensitive data and add nothing here). `git`/`gh` (CLI, not MCP) were used to publish.
 
 ## Verification status (honest)
-- **Verified locally:** all pytest suites (C1 13, C2 9 mocked, C4 31 — 8 classifier + 16
+- **Verified locally:** all pytest suites (C1 13, C2 9 mocked, C4 40 — 8 classifier + 25
   redaction + 7 config), signature guards, import-has-no-side-effects, C4 offline eval, and
   C3 against real MySQL 8.4.9. Reproduce:
 
 ```text
 $ python -m pytest -q
-.....................................................                    [100%]
-53 passed
+..............................................................           [100%]
+62 passed
 ```
 - **Verified against an external service:** C2's live API call returned `Game of Thrones`
   for `Action`; C4's **live** OpenRouter demo ran end-to-end on a free model
   (`nvidia/nemotron-nano-9b-v2:free`), redacting TOKEN/IP/EMAIL before the call and
-  returning `RESTRICTED / PII`.
+  returning a high-sensitivity credentials classification (`CONFIDENTIAL / CREDENTIALS`
+  on that model; the exact label can vary by model).
 - **Not exhaustively verified:** C4's real-world accuracy at scale and the PII regex recall
   against adversarial formats — these need a larger labelled set and load testing.

@@ -18,7 +18,17 @@ from collections.abc import Callable
 
 _EMAIL = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
 _TOKEN = re.compile(
-    r"\b(?:sk-[A-Za-z0-9]{16,}|ghp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9\-]{10,})\b"
+    r"\b(?:"
+    r"sk-ant-[A-Za-z0-9_-]{20,}"          # Anthropic
+    r"|sk-proj-[A-Za-z0-9_-]{20,}"        # OpenAI project
+    r"|sk-[A-Za-z0-9]{16,}"               # OpenAI / generic sk-
+    r"|gh[opsu]_[A-Za-z0-9]{20,}"         # GitHub (gho_/ghp_/ghs_/ghu_)
+    r"|github_pat_[A-Za-z0-9_]{20,}"      # GitHub fine-grained PAT
+    r"|AKIA[0-9A-Z]{16}"                  # AWS access key id
+    r"|AIza[0-9A-Za-z_-]{35,}"            # Google API key
+    r"|(?:sk|rk|pk)_(?:live|test)_[0-9A-Za-z]{16,}"  # Stripe
+    r"|xox[baprs]-[A-Za-z0-9-]{10,}"      # Slack
+    r")\b"
 )
 _JWT = re.compile(r"\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b")
 _PRIVATE_KEY = re.compile(
@@ -26,7 +36,8 @@ _PRIVATE_KEY = re.compile(
     re.DOTALL,
 )
 _SECRET = re.compile(
-    r"(?i)\b(?:password|passwd|pwd|secret|api[_-]?key|access[_-]?token|token)\b"
+    r"(?i)\b(?:password|passwd|pwd|contraseña|contrasena|clave"
+    r"|secret|api[_-]?key|access[_-]?token|token)\b"
     r"\s*[=:]\s*[\"']?[^\s\"']+"
 )
 _IBAN = re.compile(r"\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b")
@@ -35,6 +46,12 @@ _SSN = re.compile(r"\b\d{3}-\d{2}-\d{4}\b")
 _SSN_BARE = re.compile(r"\b\d{9}\b")
 _IPV4 = re.compile(r"\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b")
 _PHONE = re.compile(r"(?<!\w)\+?\d[\d .\-]{5,13}\d(?!\w)")
+# Prefix-less, high-entropy blob (a key/token a human might paste without a known
+# prefix); only masked when it also passes _looks_like_secret (letters AND digits).
+_GENERIC_SECRET = re.compile(r"(?<![A-Za-z0-9])[A-Za-z0-9]{24,}(?![A-Za-z0-9])")
+# Argentine national IDs (common in Spanish free-form input at MeLi).
+_CUIT = re.compile(r"\b\d{2}-\d{8}-\d\b")
+_DNI = re.compile(r"(?i)\bDNI[\s:]+(?:\d{1,2}\.\d{3}\.\d{3}|\d{7,8})\b")
 
 # Zero-width / invisible characters an adversary can splice into a token to break
 # a regex without changing how the text renders (ZWSP, ZWNJ, ZWJ, word joiner, BOM).
@@ -72,6 +89,20 @@ def _luhn_ok(candidate: str) -> bool:
     return total % 10 == 0
 
 
+def _looks_like_secret(candidate: str) -> bool:
+    """True for high-entropy-looking blobs: long, with both letters and digits.
+
+    Lets the generic catch-all mask prefix-less keys/tokens a human might paste,
+    while leaving long plain words (no digit) and pure-digit runs (handled by the
+    card/SSN/phone detectors) untouched.
+    """
+    return (
+        len(candidate) >= 24
+        and any(c.isalpha() for c in candidate)
+        and any(c.isdigit() for c in candidate)
+    )
+
+
 def redact(text: str) -> tuple[str, dict[str, int]]:
     """Return ``(redacted_text, counts_by_type)``.
 
@@ -80,7 +111,10 @@ def redact(text: str) -> tuple[str, dict[str, int]]:
     detectors (private key, ``key=value`` secrets, JWT, API tokens) run first;
     IBAN runs before the card detector so an IBAN's digit run is never read as a
     card; a bare 9-digit SSN is matched before phone so it is labeled SSN, not
-    PHONE.
+    PHONE. A bounded high-entropy catch-all (`_GENERIC_SECRET`) runs after the
+    specific credential/email/IBAN detectors so they win, and before the numeric
+    PII detectors; national IDs (CUIT/DNI) run before card/phone so their digit
+    runs aren't mislabeled.
 
     Input is first NFKC-normalized and stripped of zero-width characters so
     homoglyph / invisible-character evasions cannot slip PII past the patterns.
@@ -108,7 +142,10 @@ def redact(text: str) -> tuple[str, dict[str, int]]:
     text = _apply(_TOKEN, "TOKEN", text)
     text = _apply(_EMAIL, "EMAIL", text)
     text = _apply(_IBAN, "IBAN", text)
+    text = _apply(_GENERIC_SECRET, "SECRET", text, validator=_looks_like_secret)
     text = _apply(_CARD_CANDIDATE, "CARD", text, validator=_luhn_ok)
+    text = _apply(_CUIT, "CUIT", text)
+    text = _apply(_DNI, "DNI", text)
     text = _apply(_SSN, "SSN", text)
     text = _apply(_SSN_BARE, "SSN", text)
     text = _apply(_IPV4, "IP", text)

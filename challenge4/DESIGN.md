@@ -35,10 +35,12 @@ before** anything is sent. *Trade-off:* regex misses novel formats (an LLM detec
 would catch more), but using the model to find PII would require *sending the PII to
 the model first* — exactly what we are trying to avoid. Local detection means the
 act of detecting never leaks. Card numbers are Luhn-validated to cut false positives.
-The detectors cover email, API tokens (sk-/ghp_/AKIA/xox), JWTs, PEM private-key blocks,
-`key=value` secrets, IBANs, Luhn-valid cards, SSNs (dashed and bare 9-digit), IPv4 and
-phone numbers; patterns run most-specific first so credentials and IBANs are not eaten by
-the broader numeric detectors. Input is NFKC-normalized and stripped of zero-width characters
+The detectors cover email; API tokens (OpenAI `sk-`/`sk-proj-`, Anthropic `sk-ant-`, AWS
+`AKIA`, Google `AIza`, Stripe, GitHub, Slack); JWTs; PEM private-key blocks; `key=value`
+secrets (English + Spanish keywords); a bounded high-entropy catch-all for prefix-less keys a
+human might paste (≥24 chars with letters *and* digits); IBANs; Luhn-valid cards; Argentine
+CUIT/DNI; SSNs (dashed and bare 9-digit); IPv4 and phone numbers. Patterns run most-specific
+first so credentials, IBANs and national IDs are not eaten by the broader numeric detectors. Input is NFKC-normalized and stripped of zero-width characters
 before detection, so homoglyph / invisible-character evasions can't smuggle PII past the regexes
 (see THREAT_MODEL.md). This is a **minimisation control, not a guarantee**.
 

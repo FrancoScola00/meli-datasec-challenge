@@ -115,6 +115,74 @@ def test_fullwidth_digits_are_normalized_then_detected():
     assert counts["SSN"] == 1
 
 
+# Secret-shaped test inputs are assembled from fragments so the contiguous literal
+# never lands in the source (GitHub push protection blocks committed secret patterns);
+# redact() still sees the joined string at runtime.
+def test_anthropic_key_is_redacted():
+    key = "sk-" + "ant-api03-AbcDef0123456789GhiJkl0123456789MnoP"
+    out, counts = redact(f"usá {key} ahora")
+    assert "sk-ant" not in out
+    assert counts["TOKEN"] == 1
+
+
+def test_google_api_key_is_redacted():
+    key = "AIza" + "SyD0123456789abcdefghijklmnopqrstuvwxyz"
+    out, counts = redact(f"key {key} here")
+    assert "AIza" not in out
+    assert counts["TOKEN"] == 1
+
+
+def test_stripe_key_is_redacted():
+    key = "sk_" + "live_" + "0000fakeStripeKey000000aa"
+    out, counts = redact(f"stripe {key} done")
+    assert "live_0000" not in out
+    assert counts["TOKEN"] == 1
+
+
+def test_github_pat_is_redacted():
+    key = "ghp_" + "016C7f8a9b0c1d2e3f4g5h6i7j8k9l0m1n2o"
+    out, counts = redact(f"token {key} end")
+    assert "ghp_" not in out
+    assert counts["TOKEN"] == 1
+
+
+def test_prefixless_high_entropy_key_is_caught_by_generic():
+    # A human pastes a key with no recognisable prefix (the demo's adversarial case).
+    out, counts = redact("Te paso la api key nueva 'ant9879423429hlkjlkjn23423lk342ln' gracias")
+    assert "ant9879423429hlkjlkjn23423lk342ln" not in out
+    assert "[REDACTED_SECRET]" in out
+    assert counts["SECRET"] == 1
+
+
+def test_cuit_is_redacted():
+    out, counts = redact("facturar al CUIT 20-12345678-3 por favor")
+    assert "20-12345678-3" not in out
+    assert counts["CUIT"] == 1
+
+
+def test_dni_with_keyword_is_redacted():
+    out, counts = redact("DNI: 12345678 verificado")
+    assert "12345678" not in out
+    assert counts["DNI"] == 1
+    dotted_out, dotted_counts = redact("titular DNI 12.345.678 ok")
+    assert "12.345.678" not in dotted_out
+    assert dotted_counts["DNI"] == 1
+
+
+def test_spanish_password_literal_is_redacted():
+    out, counts = redact("la contraseña=hunter2 es secreta")
+    assert "hunter2" not in out
+    assert counts["SECRET"] == 1
+
+
+def test_long_plain_word_is_not_over_redacted():
+    # 24+ chars but letters only (no digit) -> generic catch-all must NOT fire.
+    text = "Supercalifragilisticexpialidocious today"
+    out, counts = redact(text)
+    assert out == text
+    assert counts == {}
+
+
 def test_clean_text_is_unchanged():
     text = "The weather is pleasant in spring."
     out, counts = redact(text)

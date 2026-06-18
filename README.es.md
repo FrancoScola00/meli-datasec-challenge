@@ -13,7 +13,7 @@ Cuatro desafíos para el track Sr Cybersecurity Analyst (Leak Prevention). El fo
 | 1 | `solution_minesweeper.py` | Cuenta minas vecinas | ✅ pytest → 13 passed (local) |
 | 2 | `solution_best_in_genre.py` | Serie mejor puntuada de un género (API paginada) | ✅ pytest → 9 passed mock + ✅ API en vivo |
 | 3 | `applicant_query.sql` | Clientes con >3 eventos 'failure' (MySQL 8) | ✅ corrido en MySQL 8.4.9 real |
-| 4 | `challenge4/` | Motor de clasificación con LLM + redacción de PII | ✅ pytest → 31 passed + eval offline + ✅ demo en vivo |
+| 4 | `challenge4/` | Motor de clasificación con LLM + redacción de PII | ✅ pytest → 40 passed + eval offline + ✅ demo en vivo |
 
 ## Estructura del repositorio
 Los tres entregables graded van en la raíz (la ruta que espera el auto-grader);
@@ -138,19 +138,20 @@ servidores MCP conectados de `claude.ai` (Gmail/Calendar/Drive) se **evitaron a 
 (tocan datos sensibles y no aportan acá). `git`/`gh` (CLI, no MCP) se usaron para publicar.
 
 ## Estado de verificación (honesto)
-- **Verificado localmente:** todas las suites pytest (C1 13, C2 9 mock, C4 31 — 8 clasificador +
-  16 redacción + 7 config), guardas de firma, import sin side effects, eval offline de C4, y C3
+- **Verificado localmente:** todas las suites pytest (C1 13, C2 9 mock, C4 40 — 8 clasificador +
+  25 redacción + 7 config), guardas de firma, import sin side effects, eval offline de C4, y C3
   contra MySQL 8.4.9 real. Reproducir:
 
 ```text
 $ python -m pytest -q
-.....................................................                    [100%]
-53 passed
+..............................................................           [100%]
+62 passed
 ```
 - **Verificado contra servicio externo:** la llamada en vivo de C2 devolvió `Game of
   Thrones` para `Action`; la demo en vivo de C4 corrió end-to-end con un modelo free
   (`nvidia/nemotron-nano-9b-v2:free`), redactando TOKEN/IP/EMAIL antes de la llamada y
-  devolviendo un label `RESTRICTED / PII`.
+  devolviendo una clasificación de credenciales de alta sensibilidad (`CONFIDENTIAL / CREDENTIALS`
+  en ese modelo; la etiqueta exacta puede variar según el modelo).
 - **No verificado exhaustivamente:** la precisión real de C4 a escala y el recall del
   redactor de PII por regex frente a formatos adversarios — requieren un set etiquetado
   más grande y pruebas de carga.
