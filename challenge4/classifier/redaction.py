@@ -13,6 +13,7 @@ control, not a guarantee; see DESIGN.md.
 from __future__ import annotations
 
 import re
+import unicodedata
 from collections.abc import Callable
 
 _EMAIL = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
@@ -34,6 +35,22 @@ _SSN = re.compile(r"\b\d{3}-\d{2}-\d{4}\b")
 _SSN_BARE = re.compile(r"\b\d{9}\b")
 _IPV4 = re.compile(r"\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b")
 _PHONE = re.compile(r"(?<!\w)\+?\d[\d .\-]{5,13}\d(?!\w)")
+
+# Zero-width / invisible characters an adversary can splice into a token to break
+# a regex without changing how the text renders (ZWSP, ZWNJ, ZWJ, word joiner, BOM).
+_ZERO_WIDTH = dict.fromkeys([0x200B, 0x200C, 0x200D, 0x2060, 0xFEFF], None)
+
+
+def _normalize(text: str) -> str:
+    """Canonicalise text before detection so trivial obfuscations don't bypass it.
+
+    NFKC folds full-width / homoglyph look-alikes to their ASCII form (e.g. the
+    full-width digits ``１２３`` -> ``123``), and zero-width characters spliced into
+    a token are stripped, so ``jo<ZWSP>hn@x.com`` is still detected. Decoding
+    base64/hex is deliberately out of scope - too false-positive-prone for a
+    redactor; see THREAT_MODEL.md.
+    """
+    return unicodedata.normalize("NFKC", text).translate(_ZERO_WIDTH)
 
 
 def _luhn_ok(candidate: str) -> bool:
@@ -64,7 +81,11 @@ def redact(text: str) -> tuple[str, dict[str, int]]:
     IBAN runs before the card detector so an IBAN's digit run is never read as a
     card; a bare 9-digit SSN is matched before phone so it is labeled SSN, not
     PHONE.
+
+    Input is first NFKC-normalized and stripped of zero-width characters so
+    homoglyph / invisible-character evasions cannot slip PII past the patterns.
     """
+    text = _normalize(text)
     counts: dict[str, int] = {}
 
     def _apply(

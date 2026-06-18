@@ -10,18 +10,31 @@ posture** (how sensitive data is handled), not just a working answer.
 
 | # | Deliverable | What it is | Verified |
 |---|-------------|-----------|----------|
-| 1 | `solution_minesweeper.py` | Count neighbouring mines | ✅ pytest → 12 passed (local) |
+| 1 | `solution_minesweeper.py` | Count neighbouring mines | ✅ pytest → 13 passed (local) |
 | 2 | `solution_best_in_genre.py` | Highest-rated TV show in a genre (paginated API) | ✅ pytest → 9 passed mocked + ✅ live API |
 | 3 | `applicant_query.sql` | Customers with >3 failed ad events (MySQL 8) | ✅ run on real MySQL 8.4.9 |
-| 4 | `challenge4/` | LLM data-classification engine + PII redaction | ✅ pytest → 29 passed + offline eval + ✅ live demo (free model) |
+| 4 | `challenge4/` | LLM data-classification engine + PII redaction | ✅ pytest → 31 passed + offline eval + ✅ live demo (free model) |
 
 ## Repository layout
+The three graded deliverables sit at the repo root (the path the auto-grader
+expects); Challenge 4 is a self-contained subproject.
 ```
-solution_minesweeper.py     solution_best_in_genre.py     applicant_query.sql
-challenge4/                  # LLM classifier (module + CLI + eval + live demo + DESIGN.md)
-tests/                       # pytest suites + seed_and_check.sql + verify_c3.ps1
-.claude/skills/              # 3 reusable Claude Code skills
-requirements.txt  .python-version  Makefile  run.ps1  conftest.py
+.
+├─ solution_minesweeper.py     # C1 — graded entry point (root, per grading contract)
+├─ solution_best_in_genre.py   # C2 — graded entry point (root, per grading contract)
+├─ applicant_query.sql         # C3 — graded MySQL 8 query (root, per grading contract)
+├─ challenge4/                 # C4 — LLM data-classification engine  ▸ see challenge4/README.md
+│  ├─ classifier/              #    package: redaction, prompts, llm_client, classify, config, models
+│  ├─ eval/                    #    offline deterministic eval (golden_set.jsonl + recorded responses)
+│  ├─ demo_live.py  demo_batch.py  classify_cli.py   #    runnable entry points
+│  ├─ taxonomy.yaml  samples.txt  .env.example       #    config / data / secrets template
+│  ├─ DESIGN.md                #    rationale & trade-offs
+│  └─ THREAT_MODEL.md          #    MITRE ATLAS mapping of the controls
+├─ tests/                      # pytest suites + seed_and_check.sql + verify_c3.ps1
+├─ .github/workflows/ci.yml    # CI: full pytest suite on every push / PR
+├─ .claude/skills/             # 3 reusable Claude Code skills
+├─ README.md  README.es.md     # English (primary) · Spanish
+└─ requirements.txt  .python-version  Makefile  run.ps1  conftest.py
 ```
 
 ## Quickstart
@@ -125,14 +138,14 @@ the built-in `WebFetch` tool was used to confirm the C2 API shape; the connected
 sensitive data and add nothing here). `git`/`gh` (CLI, not MCP) were used to publish.
 
 ## Verification status (honest)
-- **Verified locally:** all pytest suites (C1 12, C2 9 mocked, C4 29 — 8 classifier + 14
+- **Verified locally:** all pytest suites (C1 13, C2 9 mocked, C4 31 — 8 classifier + 16
   redaction + 7 config), signature guards, import-has-no-side-effects, C4 offline eval, and
   C3 against real MySQL 8.4.9. Reproduce:
 
 ```text
 $ python -m pytest -q
-..................................................                       [100%]
-50 passed
+.....................................................                    [100%]
+53 passed
 ```
 - **Verified against an external service:** C2's live API call returned `Game of Thrones`
   for `Action`; C4's **live** OpenRouter demo ran end-to-end on a free model

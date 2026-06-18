@@ -38,7 +38,9 @@ act of detecting never leaks. Card numbers are Luhn-validated to cut false posit
 The detectors cover email, API tokens (sk-/ghp_/AKIA/xox), JWTs, PEM private-key blocks,
 `key=value` secrets, IBANs, Luhn-valid cards, SSNs (dashed and bare 9-digit), IPv4 and
 phone numbers; patterns run most-specific first so credentials and IBANs are not eaten by
-the broader numeric detectors. This is a **minimisation control, not a guarantee**.
+the broader numeric detectors. Input is NFKC-normalized and stripped of zero-width characters
+before detection, so homoglyph / invisible-character evasions can't smuggle PII past the regexes
+(see THREAT_MODEL.md). This is a **minimisation control, not a guarantee**.
 
 **Determinism.** `temperature=0`, a fixed model, and a stable prompt make runs
 reproducible — important for auditing a security control and for stable evals.

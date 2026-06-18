@@ -99,6 +99,22 @@ def test_bare_ssn_is_labeled_ssn():
     assert "PHONE" not in counts
 
 
+def test_zero_width_split_email_is_redacted():
+    # A zero-width space (U+200B) spliced mid-token must not defeat detection.
+    out, counts = redact("reach me at jo​hn.doe@example.com please")
+    assert "[REDACTED_EMAIL]" in out
+    assert "example.com" not in out
+    assert counts["EMAIL"] == 1
+
+
+def test_fullwidth_digits_are_normalized_then_detected():
+    # Full-width digit homoglyphs (U+FF11..) fold to ASCII via NFKC, then caught.
+    fullwidth = "１２３４５６７８９"  # 123456789
+    out, counts = redact(f"ssn {fullwidth} on file")
+    assert "[REDACTED_SSN]" in out
+    assert counts["SSN"] == 1
+
+
 def test_clean_text_is_unchanged():
     text = "The weather is pleasant in spring."
     out, counts = redact(text)

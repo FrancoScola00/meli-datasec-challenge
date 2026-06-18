@@ -10,18 +10,31 @@ Cuatro desafíos para el track Sr Cybersecurity Analyst (Leak Prevention). El fo
 
 | # | Entregable | Qué es | Verificado |
 |---|-----------|--------|-----------|
-| 1 | `solution_minesweeper.py` | Cuenta minas vecinas | ✅ pytest → 12 passed (local) |
+| 1 | `solution_minesweeper.py` | Cuenta minas vecinas | ✅ pytest → 13 passed (local) |
 | 2 | `solution_best_in_genre.py` | Serie mejor puntuada de un género (API paginada) | ✅ pytest → 9 passed mock + ✅ API en vivo |
 | 3 | `applicant_query.sql` | Clientes con >3 eventos 'failure' (MySQL 8) | ✅ corrido en MySQL 8.4.9 real |
-| 4 | `challenge4/` | Motor de clasificación con LLM + redacción de PII | ✅ pytest → 29 passed + eval offline + ✅ demo en vivo |
+| 4 | `challenge4/` | Motor de clasificación con LLM + redacción de PII | ✅ pytest → 31 passed + eval offline + ✅ demo en vivo |
 
 ## Estructura del repositorio
+Los tres entregables graded van en la raíz (la ruta que espera el auto-grader);
+el Challenge 4 es un subproyecto autocontenido.
 ```
-solution_minesweeper.py     solution_best_in_genre.py     applicant_query.sql
-challenge4/                  # Clasificador LLM (módulo + CLI + eval + demos + DESIGN.md)
-tests/                       # suites pytest + seed_and_check.sql + verify_c3.ps1
-.claude/skills/              # 3 skills de Claude Code reutilizables
-requirements.txt  .python-version  Makefile  run.ps1  conftest.py
+.
+├─ solution_minesweeper.py     # C1 — entry point graded (raíz, por contrato de grading)
+├─ solution_best_in_genre.py   # C2 — entry point graded (raíz, por contrato de grading)
+├─ applicant_query.sql         # C3 — query MySQL 8 graded (raíz, por contrato de grading)
+├─ challenge4/                 # C4 — motor de clasificación LLM  ▸ ver challenge4/README.md
+│  ├─ classifier/              #    paquete: redaction, prompts, llm_client, classify, config, models
+│  ├─ eval/                    #    eval offline determinista (golden_set.jsonl + respuestas grabadas)
+│  ├─ demo_live.py  demo_batch.py  classify_cli.py   #    entry points ejecutables
+│  ├─ taxonomy.yaml  samples.txt  .env.example       #    config / datos / plantilla de secretos
+│  ├─ DESIGN.md                #    racional y trade-offs
+│  └─ THREAT_MODEL.md          #    mapeo MITRE ATLAS de los controles
+├─ tests/                      # suites pytest + seed_and_check.sql + verify_c3.ps1
+├─ .github/workflows/ci.yml    # CI: suite pytest completa en cada push / PR
+├─ .claude/skills/             # 3 skills de Claude Code reutilizables
+├─ README.md  README.es.md     # Inglés (primario) · Español
+└─ requirements.txt  .python-version  Makefile  run.ps1  conftest.py
 ```
 
 ## Inicio rápido
@@ -125,14 +138,14 @@ servidores MCP conectados de `claude.ai` (Gmail/Calendar/Drive) se **evitaron a 
 (tocan datos sensibles y no aportan acá). `git`/`gh` (CLI, no MCP) se usaron para publicar.
 
 ## Estado de verificación (honesto)
-- **Verificado localmente:** todas las suites pytest (C1 12, C2 9 mock, C4 29 — 8 clasificador +
-  14 redacción + 7 config), guardas de firma, import sin side effects, eval offline de C4, y C3
+- **Verificado localmente:** todas las suites pytest (C1 13, C2 9 mock, C4 31 — 8 clasificador +
+  16 redacción + 7 config), guardas de firma, import sin side effects, eval offline de C4, y C3
   contra MySQL 8.4.9 real. Reproducir:
 
 ```text
 $ python -m pytest -q
-..................................................                       [100%]
-50 passed
+.....................................................                    [100%]
+53 passed
 ```
 - **Verificado contra servicio externo:** la llamada en vivo de C2 devolvió `Game of
   Thrones` para `Action`; la demo en vivo de C4 corrió end-to-end con un modelo free
