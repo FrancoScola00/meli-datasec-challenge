@@ -19,6 +19,9 @@ env/
 # Claude Code local settings (personal session permissions; not a deliverable)
 .claude/settings.local.json
 
+# Personal interview-prep notes (kept local; not part of the shared deliverable)
+INTERVIEW.md
+
 # OS / IDE
 .DS_Store
 Thumbs.db

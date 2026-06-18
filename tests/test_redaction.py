@@ -45,6 +45,60 @@ def test_ipv4_is_redacted():
     assert counts["IP"] == 1
 
 
+def test_jwt_is_redacted():
+    jwt = (
+        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0."
+        "dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+    )
+    out, counts = redact(f"bearer {jwt} attached")
+    assert jwt not in out
+    assert "[REDACTED_JWT]" in out
+    assert counts["JWT"] == 1
+
+
+def test_private_key_block_is_redacted():
+    block = (
+        "-----BEGIN PRIVATE KEY-----\n"
+        "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAk\n"
+        "EArandomkeymaterialhere1234567890==\n"
+        "-----END PRIVATE KEY-----"
+    )
+    out, counts = redact(f"key follows:\n{block}\nend")
+    assert "PRIVATE KEY" not in out
+    assert "[REDACTED_PRIVATE_KEY]" in out
+    assert counts["PRIVATE_KEY"] == 1
+
+
+def test_password_literal_is_redacted():
+    out, counts = redact("login with password=hunter2 now")
+    assert "hunter2" not in out
+    assert "[REDACTED_SECRET]" in out
+    assert counts["SECRET"] == 1
+
+
+def test_secret_keyword_without_assignment_is_not_redacted():
+    # Prose mentioning the keywords but with no '='/':' must be left intact.
+    for text in ("password reset instructions", "the access token was revoked"):
+        out, counts = redact(text)
+        assert out == text
+        assert "SECRET" not in counts
+
+
+def test_iban_is_redacted_and_not_split_as_card():
+    out, counts = redact("transfer to DE89370400440532013000 today")
+    assert "DE89370400440532013000" not in out
+    assert "[REDACTED_IBAN]" in out
+    assert counts == {"IBAN": 1}
+
+
+def test_bare_ssn_is_labeled_ssn():
+    out, counts = redact("ssn 123456789 on file")
+    assert "123456789" not in out
+    assert "[REDACTED_SSN]" in out
+    assert counts["SSN"] == 1
+    assert "PHONE" not in counts
+
+
 def test_clean_text_is_unchanged():
     text = "The weather is pleasant in spring."
     out, counts = redact(text)

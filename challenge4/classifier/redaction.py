@@ -18,8 +18,19 @@ _EMAIL = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
 _TOKEN = re.compile(
     r"\b(?:sk-[A-Za-z0-9]{16,}|ghp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9\-]{10,})\b"
 )
+_JWT = re.compile(r"\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b")
+_PRIVATE_KEY = re.compile(
+    r"-----BEGIN[ A-Z0-9]*PRIVATE KEY-----.*?-----END[ A-Z0-9]*PRIVATE KEY-----",
+    re.DOTALL,
+)
+_SECRET = re.compile(
+    r"(?i)\b(?:password|passwd|pwd|secret|api[_-]?key|access[_-]?token|token)\b"
+    r"\s*[=:]\s*[\"']?[^\s\"']+"
+)
+_IBAN = re.compile(r"\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b")
 _CARD_CANDIDATE = re.compile(r"\b(?:\d[ -]?){13,19}\b")
 _SSN = re.compile(r"\b\d{3}-\d{2}-\d{4}\b")
+_SSN_BARE = re.compile(r"\b\d{9}\b")
 _IPV4 = re.compile(r"\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b")
 _PHONE = re.compile(r"(?<!\w)\+?\d[\d .\-]{5,13}\d(?!\w)")
 
@@ -47,8 +58,11 @@ def redact(text: str) -> tuple[str, dict[str, int]]:
     """Return ``(redacted_text, counts_by_type)``.
 
     Patterns are applied most-specific first so a broad detector (e.g. phone)
-    cannot consume a more specific one (e.g. a Luhn-valid card) that was already
-    masked.
+    cannot consume a more specific one (e.g. a Luhn-valid card). Credential
+    detectors (private key, ``key=value`` secrets, JWT, API tokens) run first;
+    IBAN runs before the card detector so an IBAN's digit run is never read as a
+    card; a bare 9-digit SSN is matched before phone so it is labeled SSN, not
+    PHONE.
     """
     counts: dict[str, int] = {}
 
@@ -61,10 +75,15 @@ def redact(text: str) -> tuple[str, dict[str, int]]:
 
         return pattern.sub(_replace, value)
 
-    text = _apply(_EMAIL, "EMAIL", text)
+    text = _apply(_PRIVATE_KEY, "PRIVATE_KEY", text)
+    text = _apply(_SECRET, "SECRET", text)
+    text = _apply(_JWT, "JWT", text)
     text = _apply(_TOKEN, "TOKEN", text)
+    text = _apply(_EMAIL, "EMAIL", text)
+    text = _apply(_IBAN, "IBAN", text)
     text = _apply(_CARD_CANDIDATE, "CARD", text, validator=_luhn_ok)
     text = _apply(_SSN, "SSN", text)
+    text = _apply(_SSN_BARE, "SSN", text)
     text = _apply(_IPV4, "IP", text)
     text = _apply(_PHONE, "PHONE", text)
     return text, counts
