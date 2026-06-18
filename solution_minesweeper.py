@@ -4,7 +4,6 @@
 The graded entry point is ``count_neighbouring_mines``. Importing this module has
 no side effects; the optional demo lives under ``if __name__ == "__main__"``.
 """
-from __future__ import annotations
 
 
 def count_neighbouring_mines(board: list) -> list:

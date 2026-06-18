@@ -8,7 +8,6 @@ Graded entry point: ``bestInGenre``. The module uses only the standard library
 (``urllib``) to avoid any third-party supply-chain surface. Importing has no side
 effects; the optional CLI lives under ``if __name__ == "__main__"``.
 """
-from __future__ import annotations
 
 import json
 import time

@@ -132,3 +132,6 @@ def test_http_get_json_retries_then_succeeds(monkeypatch):
 def test_signature():
     sig = inspect.signature(s.bestInGenre)
     assert list(sig.parameters) == ["genre"]
+    # Annotations must resolve to the real types, not PEP 563 strings.
+    assert sig.parameters["genre"].annotation is str
+    assert sig.return_annotation is str

@@ -61,3 +61,6 @@ def test_rejects_invalid_values():
 def test_signature():
     sig = inspect.signature(m.count_neighbouring_mines)
     assert list(sig.parameters) == ["board"]
+    # Annotations must resolve to the real types, not PEP 563 strings.
+    assert sig.parameters["board"].annotation is list
+    assert sig.return_annotation is list
