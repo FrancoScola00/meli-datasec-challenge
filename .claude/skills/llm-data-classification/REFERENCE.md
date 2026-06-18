@@ -17,8 +17,11 @@ each match with a typed placeholder and count by type. Apply most-specific patte
 first so a broad detector (phone) does not eat a specific one (a Luhn-valid card).
 ```python
 def redact(text) -> tuple[str, dict[str,int]]:
-    # EMAIL, TOKEN (sk-/ghp_/AKIA/xox), JWT, PRIVATE_KEY (PEM), SECRET (key=value),
-    # IBAN, CARD (Luhn), SSN (dashed + bare 9-digit), IP (v4), PHONE -> [REDACTED_<TYPE>]
+    # (input is NFKC-normalized + zero-width-stripped first, then, most-specific first:)
+    # PRIVATE_KEY (PEM), SECRET (key=value, EN+ES), JWT,
+    # TOKEN (sk-/sk-ant-/sk-proj-/ghp_/AKIA/AIza/Stripe/GitHub), EMAIL, IBAN,
+    # GENERIC_SECRET (high-entropy >=24, letters+digits), CARD (Luhn), CUIT, DNI,
+    # SSN (dashed + bare 9-digit), IP (v4), PHONE -> [REDACTED_<TYPE>]
 ```
 Trade-off: regex misses novel formats — it is a minimisation control, not a guarantee.
 

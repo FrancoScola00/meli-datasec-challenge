@@ -24,7 +24,8 @@ el Challenge 4 es un subproyecto autocontenido.
 ├─ solution_best_in_genre.py   # C2 — entry point graded (raíz, por contrato de grading)
 ├─ applicant_query.sql         # C3 — query MySQL 8 graded (raíz, por contrato de grading)
 ├─ challenge4/                 # C4 — motor de clasificación LLM  ▸ ver challenge4/README.md
-│  ├─ classifier/              #    paquete: redaction, prompts, llm_client, classify, config, models
+│  ├─ README.md                #    punto de entrada del subproyecto (pipeline y uso)
+│  ├─ classifier/              #    paquete: redaction, prompts, llm_client, classify, config, models, batch, cli
 │  ├─ eval/                    #    eval offline determinista (golden_set.jsonl + respuestas grabadas)
 │  ├─ demo_live.py  demo_batch.py  classify_cli.py   #    entry points ejecutables
 │  ├─ taxonomy.yaml  samples.txt  .env.example       #    config / datos / plantilla de secretos
@@ -34,7 +35,7 @@ el Challenge 4 es un subproyecto autocontenido.
 ├─ .github/workflows/ci.yml    # CI: suite pytest completa en cada push / PR
 ├─ .claude/skills/             # 3 skills de Claude Code reutilizables
 ├─ README.md  README.es.md     # Inglés (primario) · Español
-└─ requirements.txt  .python-version  Makefile  run.ps1  conftest.py
+└─ requirements.txt  .python-version  Makefile  run.ps1  conftest.py  .gitignore  .gitattributes
 ```
 
 ## Inicio rápido

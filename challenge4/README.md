@@ -36,6 +36,7 @@ taxonomy.yaml          # sensitivity levels + categories (data-driven, editable)
 .env.example           # required/optional environment variables
 samples.txt            # example inputs for the batch demo
 demo_live.py  demo_batch.py  classify_cli.py   # runnable entry points
+DESIGN.md  THREAT_MODEL.md   # design rationale + MITRE ATLAS threat model
 ```
 
 ## Run

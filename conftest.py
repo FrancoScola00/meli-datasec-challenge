@@ -1,3 +1,4 @@
+# Python 3.12
 """Pytest path setup.
 
 Puts the repository root and ``challenge4/`` on ``sys.path`` so tests can import
