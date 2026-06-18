@@ -1,0 +1,5 @@
+Subo el deploy: AWS key AKIAIOSFODNN7EXAMPLE, server 10.0.3.21, aviso a devops@meli.com
+Cobrale al cliente con la tarjeta 4111 1111 1111 1111, mail facturacion@cliente.com
+Patient SSN 123-45-6789 has a type 2 diabetes diagnosis, contact dr@clinic.com
+Reunion interna: roadmap del Q3 y headcount del equipo de fraude
+Nuevo post del blog: anunciamos los colores de nuestro logo nuevo

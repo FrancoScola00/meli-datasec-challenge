@@ -3,10 +3,10 @@
 PY  ?= .venv/bin/python
 PIP ?= $(PY) -m pip
 
-.PHONY: help install test c1 c2 c3-verify c4-demo
+.PHONY: help install test c1 c2 c3-verify c4-demo c4-batch
 
 help:
-	@echo "Targets: install | test | c1 | c2 | c3-verify | c4-demo"
+	@echo "Targets: install | test | c1 | c2 | c3-verify | c4-demo | c4-batch"
 
 install:
 	python3.12 -m venv .venv
@@ -29,3 +29,7 @@ c3-verify:
 # Live LLM call — requires OPENROUTER_API_KEY in the environment (see challenge4/.env.example).
 c4-demo:
 	$(PY) challenge4/demo_live.py --text "Ayudame a debuggear el deploy de prod: AWS key AKIAIOSFODNN7EXAMPLE, server 10.2.4.8, escribime a devops@meli.com"
+
+# Live LLM batch over challenge4/samples.txt - prints a table + summary.
+c4-batch:
+	$(PY) challenge4/demo_batch.py

@@ -1,5 +1,7 @@
 # MeLi DataSec Challenge — Leak Prevention
 
+> 🌐 **English** · [Español](README.es.md)
+
 Four challenges for the Sr Cybersecurity Analyst (Leak Prevention) track. The
 emphasis throughout is **verified correctness** and an explicit **leak-prevention
 posture** (how sensitive data is handled), not just a working answer.
@@ -29,6 +31,8 @@ requirements.txt  .python-version  Makefile  run.ps1  conftest.py
 .\run.ps1 c1           # demo Challenge 1
 .\run.ps1 c2 Action    # Challenge 2 against the live API -> "Game of Thrones"
 .\run.ps1 c3-verify    # spin up a throwaway MySQL 8, load seed, run the query
+.\run.ps1 c4-demo      # live LLM classification (needs OPENROUTER_API_KEY; see C4)
+.\run.ps1 c4-batch     # live batch over challenge4/samples.txt
 ```
 If `.\run.ps1` is blocked by execution policy:
 `powershell -ExecutionPolicy Bypass -File .\run.ps1 test`.
@@ -81,15 +85,19 @@ Classifies text by `sensitivity` / `category` / `risk_score` / `confidence` /
 `rationale`, with `needs_review` for abstention. See `challenge4/DESIGN.md` for the
 full rationale.
 ```powershell
-# offline eval (no network, deterministic)
+# offline eval (no network, deterministic) - golden set + recorded responses
 .\.venv\Scripts\python.exe challenge4\eval\evaluate.py
 
-# CLI (needs OPENROUTER_API_KEY)
-.\.venv\Scripts\python.exe challenge4\classify_cli.py --text "email me at a@b.com"
+# live demo - narrates the pipeline: redact PII -> send only redacted text -> classify
+Copy-Item challenge4\.env.example challenge4\.env   # then add your OpenRouter key
+.\run.ps1 c4-demo
+.\.venv\Scripts\python.exe challenge4\demo_live.py --text "your own text here"
 
-# live demo (real call; runbook in the script header)
-Copy-Item challenge4\.env.example challenge4\.env   # then add your key
-.\.venv\Scripts\python.exe challenge4\demo_live.py --text "Card 4111 1111 1111 1111"
+# live batch over challenge4/samples.txt - prints a table + summary
+.\run.ps1 c4-batch
+
+# machine-readable CLI (one JSON per line; --file / stdin for batch)
+.\.venv\Scripts\python.exe challenge4\classify_cli.py --file challenge4\samples.txt
 ```
 
 ## Security reasoning per challenge (leak prevention)
