@@ -48,7 +48,7 @@ python challenge4/demo_live.py --text "..."          # single live classificatio
 python challenge4/demo_batch.py                       # live batch over challenge4/samples.txt
 python challenge4/classify_cli.py --help              # CLI entry point
 
-python -m pytest tests/test_classifier.py tests/test_redaction.py tests/test_config.py -q   # 40 tests, offline
+python -m pytest tests/test_classifier.py tests/test_redaction.py tests/test_config.py -q   # 41 tests, offline
 ```
 The offline tests and `eval/` need no API key or network — the LLM is mocked /
 recorded. Only the `demo_*` scripts make a real call.

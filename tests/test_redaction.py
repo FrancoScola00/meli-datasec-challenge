@@ -17,9 +17,20 @@ def test_luhn_valid_card_is_redacted():
 
 
 def test_luhn_invalid_number_is_not_a_card():
-    # Fails the Luhn checksum -> must not be masked as a card.
+    # Fails the Luhn checksum -> must not be labeled CARD (it is redacted as NUMBER).
     out, counts = redact("ref 1234 5678 9012 3456 end")
     assert "CARD" not in counts
+
+
+def test_cardshaped_non_luhn_is_redacted_whole_not_split():
+    # A card-shaped run that fails Luhn must be redacted as ONE unit (fail-safe),
+    # never partially eaten by the phone detector leaving trailing digits exposed.
+    out, counts = redact("tarjeta 4111 2222 3333 2222 ok")
+    assert "2222" not in out            # no fragment of the run leaks
+    assert "[REDACTED_NUMBER]" in out
+    assert counts.get("NUMBER") == 1
+    assert "CARD" not in counts         # not Luhn-valid -> not a confirmed card
+    assert "PHONE" not in counts        # not split into a phone fragment
 
 
 def test_luhn_helper():

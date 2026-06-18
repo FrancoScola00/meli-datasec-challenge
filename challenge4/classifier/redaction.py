@@ -114,7 +114,8 @@ def redact(text: str) -> tuple[str, dict[str, int]]:
     PHONE. A bounded high-entropy catch-all (`_GENERIC_SECRET`) runs after the
     specific credential/email/IBAN detectors so they win, and before the numeric
     PII detectors; national IDs (CUIT/DNI) run before card/phone so their digit
-    runs aren't mislabeled.
+    runs aren't mislabeled. A card-shaped run that fails Luhn is still redacted
+    whole (as NUMBER, fail-safe) so the phone detector can't leak a fragment of it.
 
     Input is first NFKC-normalized and stripped of zero-width characters so
     homoglyph / invisible-character evasions cannot slip PII past the patterns.
@@ -144,6 +145,10 @@ def redact(text: str) -> tuple[str, dict[str, int]]:
     text = _apply(_IBAN, "IBAN", text)
     text = _apply(_GENERIC_SECRET, "SECRET", text, validator=_looks_like_secret)
     text = _apply(_CARD_CANDIDATE, "CARD", text, validator=_luhn_ok)
+    # Card-shaped run that fails Luhn: not a verified card, but redact the whole run
+    # anyway (fail-safe) so the phone detector can't mask only part of it and leave
+    # digits exposed. Labeled NUMBER, not CARD, to preserve the Luhn-verified distinction.
+    text = _apply(_CARD_CANDIDATE, "NUMBER", text)
     text = _apply(_CUIT, "CUIT", text)
     text = _apply(_DNI, "DNI", text)
     text = _apply(_SSN, "SSN", text)

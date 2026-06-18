@@ -34,7 +34,9 @@ which also handles models that ignore `json_object`.
 before** anything is sent. *Trade-off:* regex misses novel formats (an LLM detector
 would catch more), but using the model to find PII would require *sending the PII to
 the model first* — exactly what we are trying to avoid. Local detection means the
-act of detecting never leaks. Card numbers are Luhn-validated to cut false positives.
+act of detecting never leaks. Card numbers are Luhn-validated to label confirmed cards
+and cut false positives; a card-shaped run that fails Luhn is still redacted whole (as
+`NUMBER`, fail-safe) so the phone detector can never leak a fragment of it.
 The detectors cover email; API tokens (OpenAI `sk-`/`sk-proj-`, Anthropic `sk-ant-`, AWS
 `AKIA`, Google `AIza`, Stripe, GitHub, Slack); JWTs; PEM private-key blocks; `key=value`
 secrets (English + Spanish keywords); a bounded high-entropy catch-all for prefix-less keys a
