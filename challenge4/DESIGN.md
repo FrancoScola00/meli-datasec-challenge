@@ -67,6 +67,14 @@ instructions**. A sample containing "ignore previous instructions" is classified
 not obeyed. This is defense-in-depth, not a proof; combined with redaction it
 limits both what a malicious sample can do and what it can exfiltrate.
 
+## Explainability
+Every result is meant to be actioned by a human, so it is explainable rather than a
+bare label: alongside `sensitivity`/`category` it carries a `risk_score` (0-100), a
+`confidence`, a short human-readable `rationale` for *why* the sample was rated that
+way, and a `needs_review` flag. A reviewer sees the reasoning behind each decision,
+which makes borderline calls auditable and lets false positives be triaged and
+dismissed quickly instead of taken on faith.
+
 ## Observability
 Structured logging emits only redacted summaries (counts by PII type, char length)
 — never raw content. Token usage is tracked per client for cost monitoring.

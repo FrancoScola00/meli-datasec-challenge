@@ -10,6 +10,11 @@ raw text ─▶ redact PII (local regex) ─▶ wrap as <sample> data ─▶ LLM
          ─▶ validate (pydantic + taxonomy) ─▶ [repair once] ─▶ abstain / fail-closed ─▶ result
 ```
 
+Each classification returns an **explainable** result — not just a label:
+`sensitivity`, `category`, `risk_score` (0-100), `confidence`, a short `rationale`
+(the "why"), a `needs_review` flag, and a `redactions` summary — so an analyst gets
+the reasoning behind every decision.
+
 See **[DESIGN.md](DESIGN.md)** for the rationale and trade-offs, and
 **[THREAT_MODEL.md](THREAT_MODEL.md)** for the MITRE ATLAS mapping of the controls.
 
