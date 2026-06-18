@@ -28,7 +28,7 @@ c3-verify:
 
 # Live LLM call — requires OPENROUTER_API_KEY in the environment (see challenge4/.env.example).
 c4-demo:
-	$(PY) challenge4/demo_live.py --text "Ayudame a debuggear el deploy de prod: AWS key AKIAIOSFODNN7EXAMPLE, server 10.2.4.8, escribime a devops@meli.com"
+	$(PY) challenge4/demo_live.py --text "Ayudame a debuggear el deploy de prod: AWS key AKIAIOSFODNN7EXAMPLE, server '10.2.4.8'. Escribime a devops@meli.com cuando lo tengas resuelto."
 
 # Live LLM batch over challenge4/samples.txt - prints a table + summary.
 c4-batch:

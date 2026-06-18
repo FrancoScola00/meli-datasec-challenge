@@ -56,13 +56,34 @@ class Settings:
 
 def load_settings() -> Settings:
     """Build settings from the environment, with safe defaults for everything but
-    the secret. Model defaults to a cheap JSON-reliable model; override via env."""
+    the secret. Model defaults to a cheap JSON-reliable model; override via env.
+
+    Numeric settings are validated here because the environment is untrusted
+    configuration: a silently out-of-range value (e.g. a confidence threshold of
+    2.0) would quietly disable a safety control, so we fail loudly instead.
+    """
+    temperature = float(os.environ.get("CLASSIFIER_TEMPERATURE", "0"))
+    confidence_threshold = float(os.environ.get("CLASSIFIER_CONFIDENCE_THRESHOLD", "0.55"))
+    request_timeout = float(os.environ.get("CLASSIFIER_TIMEOUT", "30"))
+    max_retries = int(os.environ.get("CLASSIFIER_MAX_RETRIES", "4"))
+
+    if temperature < 0:
+        raise ValueError(f"CLASSIFIER_TEMPERATURE must be >= 0, got {temperature}")
+    if not 0.0 <= confidence_threshold <= 1.0:
+        raise ValueError(
+            f"CLASSIFIER_CONFIDENCE_THRESHOLD must be in [0.0, 1.0], got {confidence_threshold}"
+        )
+    if request_timeout <= 0:
+        raise ValueError(f"CLASSIFIER_TIMEOUT must be > 0, got {request_timeout}")
+    if max_retries < 1:
+        raise ValueError(f"CLASSIFIER_MAX_RETRIES must be >= 1, got {max_retries}")
+
     return Settings(
         api_key=os.environ.get("OPENROUTER_API_KEY"),
         base_url=os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
         model=os.environ.get("CLASSIFIER_MODEL", "openai/gpt-4o-mini"),
-        temperature=float(os.environ.get("CLASSIFIER_TEMPERATURE", "0")),
-        confidence_threshold=float(os.environ.get("CLASSIFIER_CONFIDENCE_THRESHOLD", "0.55")),
-        request_timeout=float(os.environ.get("CLASSIFIER_TIMEOUT", "30")),
-        max_retries=int(os.environ.get("CLASSIFIER_MAX_RETRIES", "4")),
+        temperature=temperature,
+        confidence_threshold=confidence_threshold,
+        request_timeout=request_timeout,
+        max_retries=max_retries,
     )

@@ -35,7 +35,10 @@ before** anything is sent. *Trade-off:* regex misses novel formats (an LLM detec
 would catch more), but using the model to find PII would require *sending the PII to
 the model first* — exactly what we are trying to avoid. Local detection means the
 act of detecting never leaks. Card numbers are Luhn-validated to cut false positives.
-This is a **minimisation control, not a guarantee**.
+The detectors cover email, API tokens (sk-/ghp_/AKIA/xox), JWTs, PEM private-key blocks,
+`key=value` secrets, IBANs, Luhn-valid cards, SSNs (dashed and bare 9-digit), IPv4 and
+phone numbers; patterns run most-specific first so credentials and IBANs are not eaten by
+the broader numeric detectors. This is a **minimisation control, not a guarantee**.
 
 **Determinism.** `temperature=0`, a fixed model, and a stable prompt make runs
 reproducible — important for auditing a security control and for stable evals.

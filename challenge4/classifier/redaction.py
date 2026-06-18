@@ -13,6 +13,7 @@ control, not a guarantee; see DESIGN.md.
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 
 _EMAIL = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
 _TOKEN = re.compile(
@@ -66,7 +67,12 @@ def redact(text: str) -> tuple[str, dict[str, int]]:
     """
     counts: dict[str, int] = {}
 
-    def _apply(pattern: re.Pattern[str], label: str, value: str, validator=None) -> str:
+    def _apply(
+        pattern: re.Pattern[str],
+        label: str,
+        value: str,
+        validator: Callable[[str], bool] | None = None,
+    ) -> str:
         def _replace(match: re.Match[str]) -> str:
             if validator is not None and not validator(match.group(0)):
                 return match.group(0)
