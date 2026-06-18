@@ -150,8 +150,8 @@ $ python -m pytest -q
 ```
 - **Verified against an external service:** C2's live API call returned `Game of Thrones`
   for `Action`; C4's **live** OpenRouter demo ran end-to-end on a free model
-  (`nvidia/nemotron-nano-9b-v2:free`), redacting TOKEN/IP/EMAIL before the call and
-  returning a high-sensitivity credentials classification (`CONFIDENTIAL / CREDENTIALS`
+  (`openai/gpt-oss-20b:free`), redacting TOKEN/IP/EMAIL before the call and
+  returning a high-sensitivity credentials classification (`RESTRICTED / CREDENTIALS`
   on that model; the exact label can vary by model).
 - **Not exhaustively verified:** C4's real-world accuracy at scale and the PII regex recall
   against adversarial formats — these need a larger labelled set and load testing.

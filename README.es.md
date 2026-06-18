@@ -150,8 +150,8 @@ $ python -m pytest -q
 ```
 - **Verificado contra servicio externo:** la llamada en vivo de C2 devolvió `Game of
   Thrones` para `Action`; la demo en vivo de C4 corrió end-to-end con un modelo free
-  (`nvidia/nemotron-nano-9b-v2:free`), redactando TOKEN/IP/EMAIL antes de la llamada y
-  devolviendo una clasificación de credenciales de alta sensibilidad (`CONFIDENTIAL / CREDENTIALS`
+  (`openai/gpt-oss-20b:free`), redactando TOKEN/IP/EMAIL antes de la llamada y
+  devolviendo una clasificación de credenciales de alta sensibilidad (`RESTRICTED / CREDENTIALS`
   en ese modelo; la etiqueta exacta puede variar según el modelo).
 - **No verificado exhaustivamente:** la precisión real de C4 a escala y el recall del
   redactor de PII por regex frente a formatos adversarios — requieren un set etiquetado
