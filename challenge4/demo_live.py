@@ -27,7 +27,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Live OpenRouter classification demo.")
     parser.add_argument(
         "--text",
-        default="Please email me at jane.doe@example.com or call 11-5555-1234",
+        default="Ayudame a debuggear el deploy de prod: AWS key AKIAIOSFODNN7EXAMPLE, server 10.2.4.8, escribime a devops@meli.com",
         help="Text sample to classify.",
     )
     args = parser.parse_args()

@@ -18,6 +18,6 @@ switch ($Target) {
     "c1"        { & $Py solution_minesweeper.py }
     "c2"        { if ($Rest) { & $Py solution_best_in_genre.py @Rest } else { & $Py solution_best_in_genre.py Action } }
     "c3-verify" { & "$PSScriptRoot\tests\verify_c3.ps1" }
-    "c4-demo"   { if ($Rest) { & $Py challenge4\demo_live.py @Rest } else { & $Py challenge4\demo_live.py --text "Please email me at jane.doe@example.com or call 11-5555-1234" } }
+    "c4-demo"   { if ($Rest) { & $Py challenge4\demo_live.py @Rest } else { & $Py challenge4\demo_live.py --text "Ayudame a debuggear el deploy de prod: AWS key AKIAIOSFODNN7EXAMPLE, server 10.2.4.8, escribime a devops@meli.com" } }
     default     { Write-Output "Targets: install | test | c1 | c2 | c3-verify | c4-demo" }
 }
