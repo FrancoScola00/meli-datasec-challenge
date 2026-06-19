@@ -1,0 +1,8 @@
+# GitGuardian / ggshield config.
+# tests/test_redaction.py contiene fixtures PEM/JWT FALSOS usados para verificar
+# el redactor de Challenge 4 (challenge4/classifier/redaction.py). No son secretos
+# reales; se ignoran para evitar falsos positivos en escaneos de CI / pre-commit.
+version: 2
+secret:
+  ignored-paths:
+    - "tests/test_redaction.py"

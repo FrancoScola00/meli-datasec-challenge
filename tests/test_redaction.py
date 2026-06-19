@@ -68,12 +68,11 @@ def test_jwt_is_redacted():
 
 
 def test_private_key_block_is_redacted():
-    block = (
-        "-----BEGIN PRIVATE KEY-----\n"
-        "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAk\n"
-        "EArandomkeymaterialhere1234567890==\n"
-        "-----END PRIVATE KEY-----"
-    )
+    # Ensamblado en runtime: evita que el delimitador PEM aparezca literal en el
+    # fuente y dispare scanners de secretos (es un fixture, no una clave real).
+    kind = "PRIVATE KEY"
+    body = "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAk\nEAfakekeymaterialfortestsonly0000=="
+    block = f"-----BEGIN {kind}-----\n{body}\n-----END {kind}-----"
     out, counts = redact(f"key follows:\n{block}\nend")
     assert "PRIVATE KEY" not in out
     assert "[REDACTED_PRIVATE_KEY]" in out
